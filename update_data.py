@@ -22,7 +22,11 @@ NITRO_API_URL      = "https://nitro-link-api.ppay.me"
 NITRO_API_FALLBACK = "https://ahfxd8cc43.execute-api.us-east-1.amazonaws.com"
 
 # ── Databricks ────────────────────────────────────────────────────────────────
-w = WorkspaceClient(host=DATABRICKS_HOST, token=DATABRICKS_TOKEN)
+w = WorkspaceClient(
+    host=DATABRICKS_HOST,
+    token=DATABRICKS_TOKEN,
+    auth_type="pat"
+)
 
 def run_query(sql, label, timeout=300):
     r = w.statement_execution.execute_statement(
