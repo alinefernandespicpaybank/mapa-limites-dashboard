@@ -2,26 +2,37 @@ import sys
 import time
 import json
 import re
+import os
+import requests
 from datetime import datetime
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.sql import StatementState
 
-# ── Conexão ──────────────────────────────────────────────────────────────────
-DATABRICKS_HOST = "https://picpay-principal.cloud.databricks.com"
-DATABRICKS_TOKEN = "DATABRICKS_PAT_PLACEHOLDER"  # substituído pelo GitHub Secret
-WH_ID = "3b94f0935afb32db"
-TAG = "/* source:hubai_nitro */"
+# ── Config ────────────────────────────────────────────────────────────────────
+DATABRICKS_HOST  = "https://picpay-principal.cloud.databricks.com"
+DATABRICKS_TOKEN = os.environ.get("DB_PAT_TOKEN", "")
+if not DATABRICKS_TOKEN:
+    raise ValueError("DB_PAT_TOKEN não definido")
 
+WH_ID = "3b94f0935afb32db"
+TAG   = "/* source:hubai_nitro */"
+
+NITRO_USER_TOKEN   = os.environ.get("NITRO_USER_TOKEN", "e11cd9ab771f")
+NITRO_API_URL      = "https://nitro-link-api.ppay.me"
+NITRO_API_FALLBACK = "https://ahfxd8cc43.execute-api.us-east-1.amazonaws.com"
+
+# ── Databricks ────────────────────────────────────────────────────────────────
 w = WorkspaceClient(host=DATABRICKS_HOST, token=DATABRICKS_TOKEN)
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-def run(sql, label, timeout=300):
+def run_query(sql, label, timeout=300):
     r = w.statement_execution.execute_statement(
-        warehouse_id=WH_ID, statement=TAG + "\n" + sql, wait_timeout="0s"
+        warehouse_id=WH_ID,
+        statement=TAG + "\n" + sql,
+        wait_timeout="0s"
     )
     sid = r.statement_id
     print(f"  [{label}] submetida: {sid}")
-    for i in range(timeout // 5):
+    for _ in range(timeout // 5):
         s = w.statement_execution.get_statement(sid)
         if s.status.state == StatementState.SUCCEEDED:
             cols = [c.name for c in s.manifest.schema.columns]
@@ -36,10 +47,9 @@ def run(sql, label, timeout=300):
     return None, None
 
 # ── Queries ───────────────────────────────────────────────────────────────────
-print("Executando queries...")
+print("Executando queries no Databricks...")
 
-# Antecipação de fatura
-_, rows_antec = run("""
+_, rows_antec = run_query("""
 WITH BASE_FATURA AS (
   SELECT
     date_format(add_months(due_date, 1), 'yyyy-MM') AS mes_ref,
@@ -62,70 +72,72 @@ ORDER BY mes_ref
 """, "antecipacao")
 
 # ── Montar dados ──────────────────────────────────────────────────────────────
-def to_int_list(rows, col_idx=0):
-    return [int(r[col_idx]) for r in rows]
-
 def month_label(yyyymm):
-    """'2025-01' → 'jan/25'"""
     months = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"]
     y, m = yyyymm.split("-")
     return f"{months[int(m)-1]}/{y[2:]}"
 
-# Antecipação
-antec_values = to_int_list(rows_antec, 0) if rows_antec else []
-antec_months = [month_label(r[1]) for r in rows_antec] if rows_antec else []
-# current = penúltimo (último mês fechado)
-antec_current = antec_values[-2] if len(antec_values) >= 2 else antec_values[-1] if antec_values else 0
+antec_values  = [int(r[0]) for r in rows_antec] if rows_antec else []
+antec_current = antec_values[-2] if len(antec_values) >= 2 else (antec_values[-1] if antec_values else 0)
 
-# Data de referência dinâmica
-today = datetime.today()
-last_closed = month_label(f"{today.year}-{today.month-1:02d}" if today.month > 1 else f"{today.year-1}-12")
-current_partial = month_label(f"{today.year}-{today.month:02d}")
-last_update = today.strftime("%-d %b. %Y").lower()
+today      = datetime.today()
+update_str = today.strftime("%d/%m/%Y")
 
-print(f"  Antecipação: {len(antec_values)} meses, current={antec_current:,}")
+print(f"  antecipação: {len(antec_values)} meses, fev/26={antec_current:,}")
 
 # ── Atualizar HTML ────────────────────────────────────────────────────────────
-print("Atualizando HTML...")
+print("Atualizando index.html...")
 
 with open("index.html", "r", encoding="utf-8") as f:
     html = f.read()
 
-def replace_data(html, key, new_values, new_current=None, extra_fields=None):
-    """Substitui values e current de um bloco no DATA do JS."""
-    vals_str = "[" + ",".join(str(v) for v in new_values) + "]"
-    # values
+if antec_values:
+    vals_str = "[" + ",".join(str(v) for v in antec_values) + "]"
     html = re.sub(
-        rf'({re.escape(key)}:.*?values:\s*)\[[^\]]*\]',
+        r'(antecipacao:\s*\{[^}]*values:\s*)\[[^\]]*\]',
         lambda m: m.group(1) + vals_str,
         html, flags=re.DOTALL
     )
-    # current
-    if new_current is not None:
-        html = re.sub(
-            rf'({re.escape(key)}:.*?current:\s*)\d+',
-            lambda m: m.group(1) + str(new_current),
-            html, flags=re.DOTALL
-        )
-    return html
+    html = re.sub(
+        r'(antecipacao:\s*\{[^}]*current:\s*)\d+',
+        lambda m: m.group(1) + str(antec_current),
+        html, flags=re.DOTALL
+    )
 
-# Atualizar antecipação
-if antec_values:
-    html = replace_data(html, "antecipacao", antec_values, antec_current)
-
-# Atualizar data de atualização no nav
-html = re.sub(
-    r'Atualizado em: [\d/]+',
-    f'Atualizado em: {today.strftime("%d/%m/%Y")}',
-    html
-)
+html = re.sub(r'Atualizado em: [\d/]+', f'Atualizado em: {update_str}', html)
 
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(html)
 
-print("HTML atualizado com sucesso.")
-print(json.dumps({
-    "antecipacao_meses": len(antec_values),
-    "antecipacao_current": antec_current,
-    "data_atualizacao": today.strftime("%d/%m/%Y")
-}, indent=2))
+print("  index.html atualizado.")
+
+# ── Publicar no nitro-link ────────────────────────────────────────────────────
+print("Publicando no nitro-link (link fixo via pasta)...")
+
+def call_lambda(payload):
+    for url in [NITRO_API_URL, NITRO_API_FALLBACK]:
+        try:
+            r = requests.post(url, json=payload, timeout=30)
+            r.raise_for_status()
+            return r.json()
+        except Exception as e:
+            print(f"  Lambda {url} falhou: {e}")
+    raise RuntimeError("Lambda API inacessível")
+
+key        = f"html/{NITRO_USER_TOKEN}/f/mapa-limites/mapa-limites-dashboard.html"
+public_url = f"https://nitro-link.ppay.me/{key}"
+
+result     = call_lambda({"action": "upload", "key": key, "content_type": "text/html"})
+upload_url = result["upload_url"]
+
+with open("index.html", "rb") as f:
+    content = f.read()
+
+put = requests.put(upload_url, data=content, headers={"Content-Type": "text/html"}, timeout=60)
+put.raise_for_status()
+
+print(f"  Publicado com sucesso!")
+print(f"  URL fixa: {public_url}")
+
+with open("last_published_url.txt", "w") as f:
+    f.write(public_url)

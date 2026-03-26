@@ -23,7 +23,7 @@ jobs:
 
       - name: Executar script de atualização
         env:
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DB_PAT_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
           NITRO_USER_TOKEN: e11cd9ab771f
         run: python update_data.py
 
