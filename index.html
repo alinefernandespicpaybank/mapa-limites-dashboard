@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de Oportunidades | Demandas de Limites</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --bg-section: #F8F9FA;
+  --bg-card: #FFFFFF;
+  --border: #E5E7EB;
+  --border-light: #F0F1F3;
+  --text: #1F2937;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
+  --green-primary: #21A366;
+  --green-light: #E8F5EE;
+  --green-dark: #166B3E;
+  --green-kr1: #21A366;
+  --green-kr2: #3DBD7D;
+  --green-kr3: #7DD3A8;
+  --red: #DC2626;
+  --red-light: #FEF2F2;
+  --yellow: #D97706;
+  --yellow-light: #FFFBEB;
+  --blue: #2563EB;
+  --blue-light: #EFF6FF;
+  --gray-bar: #D1D5DB;
+  --orange: #EA580C;
+  --orange-light: #FFF7ED;
+  --nav-height: 56px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* NAV */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-height);
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 100;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text);
+}
+.nav-brand img, .nav-brand svg { width: 28px; height: 28px; }
+.nav-brand .pp-icon {
+  width: 28px; height: 28px; background: var(--green-primary);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 900; font-size: 14px;
+}
+.nav-links { display: flex; gap: 4px; }
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--green-primary);
+  background: var(--green-light);
+}
+.nav-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.nav-update { 
+  font-size: 11px; 
+  color: var(--text-muted); 
+  font-weight: 500;
+}
+.nav-owner {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* CONTAINER */
+.container { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
+section { padding: 32px 0; }
+
+/* SECTION HEADERS */
+.section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--green-primary);
+  margin-bottom: 4px;
+}
+.section-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 4px; letter-spacing: -0.3px; }
+.section-title span { color: var(--green-primary); }
+.section-desc { color: var(--text-secondary); font-size: 13px; margin-bottom: 20px; }
+
+/* CARD */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+.card-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.card-subtitle { font-size: 10px; color: var(--text-muted); }
+
+/* BIG NUMBERS */
+.big-number { font-size: 32px; font-weight: 900; color: var(--green-primary); letter-spacing: -0.5px; line-height: 1.1; }
+.big-number.green { color: var(--green-primary); }
+.big-number.muted { color: var(--text); }
+
+/* COMPARISONS - PADRÃO ÚNICO */
+.comparisons { display: flex; gap: 12px; margin-top: 8px; margin-bottom: 4px; }
+.comparison { display: flex; align-items: center; gap: 3px; font-size: 22px; font-weight: 800; }
+.comparison .label { color: var(--text-muted); font-weight: 500; font-size: 10px; margin-left: 2px; }
+
+/* CURRENT VALUE - PADRÃO ÚNICO (menor, após comparações) */
+.current-value { font-size: 16px; font-weight: 600; color: var(--text-muted); margin-top: 4px; }
+.current-value .label { font-size: 10px; color: var(--text-muted); margin-right: 4px; font-weight: 500; }
+
+/* CASH-IN ESPECÍFICO - tamanhos reduzidos para não quebrar layout */
+.cashin-comparison { 
+  font-size: 14px !important; 
+  font-weight: 800 !important; 
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 2px !important;
+}
+.cashin-comparison .label { 
+  font-size: 11px !important; 
+  margin-left: 0 !important;
+  margin-top: -2px !important;
+}
+.cashin-current { font-size: 12px !important; font-weight: 600 !important; }
+.cashin-current .label { font-size: 10px !important; }
+.comparison.positive { color: var(--green-primary); }
+.comparison.negative { color: var(--red); }
+
+/* DATA REF */
+.data-ref { font-size: 9px; color: var(--text-muted); margin-top: 6px; }
+
+/* GRIDS */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+/* CHART BARS - RÓTULOS PADRONIZADOS */
+.chart-area { width: 100%; height: 160px; position: relative; margin-top: 10px; }
+.chart-bars { display: flex; align-items: flex-end; gap: 3px; height: 100%; }
+.chart-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; height: 100%; justify-content: flex-end; }
+.chart-bar { width: 100%; border-radius: 3px 3px 0 0; transition: all 0.3s; min-height: 2px; }
+.chart-bar:hover { filter: brightness(0.9); }
+.chart-bar-label { font-size: 9px; color: var(--text-muted); text-align: center; font-weight: 500; }
+
+/* LINE CHART */
+.line-chart { width: 100%; height: 180px; position: relative; }
+.line-chart svg { width: 100%; height: 100%; }
+
+/* LEGEND */
+.chart-legend { display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-secondary); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* TABS */
+.tabs { display: flex; gap: 2px; margin-bottom: 20px; background: var(--bg-section); padding: 3px; border-radius: 8px; width: fit-content; }
+.tab-btn {
+  padding: 8px 22px; border: none; background: none; color: var(--text-muted);
+  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+  border-radius: 6px; cursor: pointer; transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--text); background: rgba(0,0,0,0.03); }
+.tab-btn.active { color: white; background: var(--green-primary); box-shadow: 0 2px 8px rgba(33,163,102,0.3); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* DEMAND HEADER */
+.demand-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+  padding: 10px 14px; background: var(--bg-section); border-radius: 8px;
+}
+.demand-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.demand-active .demand-icon { background: var(--green-light); }
+.demand-passive .demand-icon { background: var(--blue-light); }
+.demand-header h3 { font-size: 16px; font-weight: 800; }
+.demand-header p { font-size: 12px; color: var(--text-muted); }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+/* ============================================================
+   SUMMARY SECTION (like the PDF image)
+   ============================================================ */
+.summary-section {
+  background: var(--bg-section);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 32px;
+  border: 1px solid var(--border);
+}
+.summary-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+}
+.summary-header h2 { font-size: 18px; font-weight: 800; }
+.summary-header h2 span { color: var(--green-primary); }
+.summary-header .ref-tag {
+  font-size: 11px; color: var(--text-muted); font-weight: 500;
+  background: white; padding: 3px 10px; border-radius: 4px; border: 1px solid var(--border);
+}
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.summary-col h4 {
+  font-size: 13px; font-weight: 700; color: var(--green-primary);
+  margin-bottom: 4px;
+}
+.summary-col.passive h4 { color: var(--text-secondary); }
+.summary-col > p { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; }
+.summary-item {
+  margin-bottom: 14px;
+}
+.summary-item h5 {
+  font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 2px;
+  display: flex; align-items: center; gap: 6px;
+}
+.summary-item h5 .icon {
+  width: 22px; height: 22px; border-radius: 5px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px;
+}
+.summary-item h5 .icon.green-bg { background: var(--green-light); }
+.summary-item h5 .icon.yellow-bg { background: var(--yellow-light); }
+.summary-item h5 .icon.orange-bg { background: var(--orange-light); }
+.summary-item h5 .icon.blue-bg { background: var(--blue-light); }
+.summary-item .sub { font-size: 11px; color: var(--text-secondary); margin-left: 28px; }
+.summary-item ul { list-style: none; padding: 0; margin-left: 28px; }
+.summary-item li { font-size: 11px; color: var(--text-secondary); padding: 1px 0; }
+.summary-item li::before { content: '#'; color: var(--green-primary); font-weight: 700; margin-right: 3px; }
+.summary-totals {
+  display: flex; gap: 0; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);
+}
+.summary-total {
+  text-align: center;
+}
+.summary-total .val { font-size: 13px; font-weight: 800; color: var(--green-primary); }
+.summary-total .lbl { font-size: 10px; color: var(--text-muted); }
+
+/* MASSIVAS BOX */
+.massivas-box {
+  grid-column: 1 / -1;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-top: 4px;
+}
+.massivas-box h5 { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+.massivas-box .sub { font-size: 11px; color: var(--text-secondary); }
+
+/* ============================================================
+   ROADMAP TABLE
+   ============================================================ */
+.roadmap-wrapper { position: relative; }
+.roadmap-main { flex: 1; overflow-x: auto; }
+.roadmap-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.roadmap-table th {
+  padding: 8px 12px; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-muted); text-align: center;
+  border-bottom: 2px solid var(--border); background: var(--bg-section);
+}
+.roadmap-table th:first-child { text-align: left; width: 150px; font-size: 12px; }
+.roadmap-row-header td {
+  padding: 8px 12px; font-size: 11px; font-weight: 700;
+  color: var(--green-primary); border-bottom: 1px solid var(--border);
+  background: var(--green-light);
+}
+.roadmap-row-header.passive td {
+  color: var(--blue); background: var(--blue-light);
+}
+.roadmap-table td {
+  padding: 4px 4px; vertical-align: top;
+  border-bottom: 1px solid var(--border-light);
+}
+.roadmap-table td:first-child {
+  font-size: 13px; font-weight: 700; color: var(--text);
+  padding-left: 12px; width: 150px;
+}
+
+/* PROJECT CARD */
+.project-card {
+  background: white; border: 1px solid var(--border); border-radius: 6px;
+  padding: 6px 8px; margin: 3px 1px; font-size: 10px; line-height: 1.3;
+  transition: all 0.2s;
+}
+.project-card:hover { border-color: var(--green-primary); box-shadow: 0 1px 4px rgba(33,163,102,0.1); }
+.project-name { font-weight: 600; color: var(--text); font-size: 10px; margin-bottom: 2px; }
+.project-detail { color: var(--text-muted); font-size: 9px; margin-bottom: 3px; }
+.project-tags { display: flex; gap: 3px; flex-wrap: wrap; }
+.tag { font-size: 8px; font-weight: 600; padding: 1px 5px; border-radius: 3px; }
+.tag-done { background: var(--green-light); color: var(--green-primary); }
+.tag-progress { background: var(--yellow-light); color: var(--yellow); }
+.tag-avaliar { background: #F3F4F6; color: var(--text-muted); }
+.tag-attention { background: #FEF3C7; color: #B45309; }
+.tag-bau { background: #F3F4F6; color: var(--text-muted); }
+.tag-kr1 { background: #E8F5EE; color: #166B3E; }
+.tag-kr2 { background: #E8F5EE; color: #2D8B5A; }
+.tag-kr3 { background: #E8F5EE; color: #4FA97C; }
+
+.project-card.cross { border-left: 2px solid var(--yellow); }
+
+/* KR LEGEND */
+.kr-legend { display: flex; gap: 16px; margin: 12px 0; flex-wrap: wrap; }
+.kr-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
+
+/* STATUS LEGEND */
+.status-legend { display: flex; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+
+/* PROPOSALS */
+.proposals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 16px; }
+.proposal-card {
+  background: white; border: 1px dashed var(--green-primary); border-radius: 10px;
+  padding: 14px 16px; transition: all 0.2s;
+}
+.proposal-card:hover { background: var(--green-light); transform: translateY(-1px); }
+.proposal-card h4 { font-size: 12px; font-weight: 700; color: var(--green-primary); margin-bottom: 4px; }
+.proposal-card p { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.4; }
+.proposal-meta { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .roadmap-sidebar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<script>
+// ============================================================
+// DADOS REAIS DO DATABRICKS — ref: 26/mar/2026
+// ============================================================
+const CONFIG = {
+  lastUpdate: "26 mar. 2026",
+  currentMonth: "mar/26",
+  months: ["jan/25","fev/25","mar/25","abr/25","mai/25","jun/25","jul/25","ago/25","set/25","out/25","nov/25","dez/25","jan/26","fev/26","mar/26"],
+};
+
+const DATA = {
+  aquisicao: {
+    ref: "mar. até dia 26",
+    novos:    {values:[250442,269597,317394,362359,398085,341234,382517,370051,431989,494212,457008,467911,607403,494847,412058],current:412058},
+    upgrades: {values:[198073,430874,359007,372227,320097,232159,443204,916135,645873,892952,944169,924461,1056552,808171,258203],current:258203},
+  },
+  pedirLimite: {
+    ref: "mar. até dia 26",
+    months: ["jul/25","ago/25","set/25","out/25","nov/25","dez/25","jan/26","fev/26","mar/26"],
+    pedidos: {values:[293213,829591,1000966,1032831,997071,874883,903913,902777,718129],current:718129},
+    aceites:  {values:[0,8852,18794,28982,17103,24297,22190,30643,11924],current:11924},
+    taxaContratacao: [0,1.07,1.88,2.81,1.72,2.78,2.45,3.39,1.66],
+  },
+  massivas: {
+    ref: "fev/26 (último mês fechado)",
+    values: [246109,435999,257761,311882,300421,253830,257468,283958,443163,300295,445993,370106,333969,437654],
+    months: ["jan/25","fev/25","mar/25","abr/25","mai/25","jun/25","jul/25","ago/25","set/25","out/25","nov/25","dez/25","jan/26","fev/26"],
+    current: 437654,
+  },
+  botaoAumento: {
+    ref: "fev/26 (último mês fechado)",
+    months: ["mai/25","jun/25","jul/25","ago/25","set/25","out/25","nov/25","dez/25","jan/26","fev/26"],
+    ligou:    [18,1294923,766514,724055,736800,658042,502940,418528,586082,738442],
+    desligou: [0,0,61072,60479,63466,57634,51096,63372,50644,64788],
+    saldoAcum: [18,1294941,2061455,2785534,3522334,4180376,4683316,5101844,5687926,6426368],
+    ligadoAtual: 6426368,
+    // MAT total de cada mês (dados reais da tabela card_mat)
+    mat: [4475411,4512583,4628687,4760551,4914678,5211366,5432315,5621822,5677440,5663990],
+    // MAT com flag ligada (dados reais - acumulativo com janela 5 meses)
+    flagMat: [14,322234,738904,1145435,1583868,2071744,2479896,2868454,3196207,3663844],
+    // % MAT com flag (dados reais)
+    pctMat: [0.0,7.1,16.0,24.1,32.2,39.8,45.7,51.0,56.3,64.7],
+  },
+  antecipacao: {
+    ref: "fev/26 (último mês fechado)",
+    values: [1039325,990309,981951,1200684,1126806,1307952,1304937,1395515,1590174,1519464,1619327,1776178,1846427,1836247,1785883],
+    current: 1836247,
+  },
+  cashIn: {
+    ref: "mar. até dia 26",
+    clientes: [2881367,2992435,2995759,2912201,3035652,3150832,3352569,3432107,3522187,3541549,3574251,3813899,3860284,3742123,3528217],
+    aportes:  [31833115,31108130,28926417,26566804,29209353,29669150,36294888,34864077,35200616,31643277,23799205,25757344,23725217,20073218,17167361],
+    valores:  [219748800,231008566,247358594,260102681,257017520,267079648,306536801,307113172,311934309,341133971,325353628,360368481,314890218,289440629,241838594],
+    saldos:   [1245000000,1312000000,1398000000,1485000000,1523000000,1598000000,1712000000,1789000000,1856000000,1923000000,1987000000,2098000000,2156000000,2187000000,2234000000],
+    currentValor: 241838594,
+    currentClientes: 3528217,
+    currentAportes: 17167361,
+    currentSaldo: 2234000000,
+  },
+  negada: {
+    ref: "mar. até dia 26",
+    values: [2655876,2718418,2939119,2921628,2851546,2542782,2708670,2832248,2806031,2989583,2990234,2995856,2933323,3083844,2572864],
+    current: 2572864,
+    reversao: {
+      values: [399262,398550,426588,433705,455607,443300,416385,419430,429314,441696,463223,469312,470530,454835,367729],
+      current: 367729,
+    },
+  },
+};
+
+// ============= HELPERS =============
+function fmtNum(n) {
+  if (n === null || n === undefined) return '—';
+  if (Math.abs(n) >= 1e9) return (n/1e9).toFixed(2) + ' bi';
+  if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(1) + ' MM';
+  if (Math.abs(n) >= 1e3) return (n/1e3).toFixed(0) + ' mil';
+  return n.toLocaleString('pt-BR');
+}
+function fmtBRL(n) {
+  if (Math.abs(n) >= 1e9) return 'R$ ' + (n/1e9).toFixed(2) + ' bi';
+  if (Math.abs(n) >= 1e6) return 'R$ ' + (n/1e6).toFixed(0) + ' MM';
+  return 'R$ ' + n.toLocaleString('pt-BR');
+}
+function fmtLabel(n, forceBillion) {
+  if (forceBillion && Math.abs(n) >= 1e9) return (n/1e9).toFixed(2).replace('.00','') + ' bi';
+  if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(1).replace('.0','') + 'MM';
+  if (Math.abs(n) >= 1e3) return (n/1e3).toFixed(0) + 'K';
+  return String(n);
+}
+function calcMoM(values, idx) {
+  if (!idx) idx = values.length - 1;
+  if (idx < 1) return null;
+  const curr = values[idx], prev = values[idx-1];
+  if (!prev) return null;
+  return ((curr - prev) / prev * 100);
+}
+// MoM sobre os dois últimos meses FECHADOS (ignora mês parcial = último elemento)
+function calcMoMClosed(values) {
+  const n = values.length;
+  if (n < 3) return null;
+  const curr = values[n-2], prev = values[n-3];
+  if (!prev) return null;
+  return ((curr - prev) / prev * 100);
+}
+function calcYoY(values, idx) {
+  if (!idx) idx = values.length - 1;
+  if (idx < 12) return null;
+  const curr = values[idx], prev = values[idx-12];
+  if (!prev) return null;
+  return ((curr - prev) / prev * 100);
+}
+function compHTML(mom, yoy, inverted) {
+  let html = '';
+  if (mom !== null) {
+    const isGood = inverted ? mom < 0 : mom > 0;
+    const cls = isGood ? 'positive' : 'negative';
+    const arrow = mom > 0 ? '↑' : '↓';
+    html += '<div class="comparison '+cls+'">' + arrow + ' ' + (mom > 0 ? '+' : '') + mom.toFixed(1) + '% <span class="label">MoM</span></div>';
+  }
+  if (yoy !== null) {
+    const isGood = inverted ? yoy < 0 : yoy > 0;
+    const cls = isGood ? 'positive' : 'negative';
+    const arrow = yoy > 0 ? '↑' : '↓';
+    html += '<div class="comparison '+cls+'">' + arrow + ' ' + (yoy > 0 ? '+' : '') + yoy.toFixed(1) + '% <span class="label">YoY</span></div>';
+  }
+  return html;
+}
+</script>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="pp-icon">P</div>
+    Mapa de Oportunidades | <span style="color:var(--green-primary)">Demandas de Limites</span>
+  </div>
+  <div class="nav-links">
+    <a href="#resumo" class="active">Resumo</a>
+    <a href="#indicadores">Indicadores</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#propostas">Propostas</a>
+  </div>
+  <div class="nav-meta">
+    <div class="nav-update">Atualizado em: 26/mar/2026</div>
+    <div class="nav-owner">Owner: @aline fernandes</div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     RESUMO (ref Q4 25 style)
+     ============================================================ -->
+<section id="resumo" style="padding-top: calc(var(--nav-height) + 24px);">
+<div class="container">
+
+  <div class="summary-section">
+    <div class="summary-header">
+      <div class="pp-icon" style="width:32px;height:32px;background:var(--green-primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:16px;">P</div>
+      <h2>Mapa de Oportunidades | <span>Demandas de Limites</span></h2>
+      <span class="ref-tag">(ref. Q425)</span>
+    </div>
+
+    <div class="summary-grid">
+      <!-- ATIVAS -->
+      <div class="summary-col">
+        <h4>Demandas Ativas</h4>
+        <p>Ofertas de limite disponíveis para os clientes</p>
+
+        <div class="summary-item">
+          <h5><span class="icon green-bg">🚀</span> Aquisição</h5>
+          <div class="sub"><b>Clientes novos ou Upgrades</b></div>
+          <ul>
+            <li>2.8 MM de upgrades - 57% de N1 p/ N2</li>
+            <li>1.5 MM de vendas - 62% N1 ou N2</li>
+          </ul>
+        </div>
+
+        <div class="summary-item">
+          <h5><span class="icon green-bg">📈</span> Pedir Mais Limite</h5>
+          <div class="sub"><b>Clientes que acessaram a jornada no App</b></div>
+          <ul>
+            <li>3 MM clientes pediram</li>
+            <li style="padding-left:10px;font-size:10px;">+ 124 mil clientes com PAP</li>
+          </ul>
+        </div>
+
+        <!-- MASSIVAS dentro das ativas — mesmo layout, contorno pontilhado -->
+        <div class="summary-item" style="border:1px dashed var(--green-primary);border-radius:8px;padding:8px 12px;margin-top:8px;">
+          <h5><span class="icon green-bg">⚡</span> Massivas</h5>
+          <div class="sub"><b>Massivas de Aumento de Limite</b></div>
+          <div class="sub">Clientes contemplados com as ações mensais de crédito</div>
+          <ul>
+            <li>1.1 MM de clientes</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- PASSIVAS -->
+      <div class="summary-col passive">
+        <h4 style="color:var(--text-secondary);">Demandas Passivas</h4>
+        <p>Ações indiretas para conseguir mais limite</p>
+
+        <div class="summary-item">
+          <h5><span class="icon yellow-bg">🔘</span> Flag de Aumento de Limite Automático</h5>
+          <div class="sub"><b>Flag que mantém o limite no máximo</b></div>
+          <ul>
+            <li>64.7% dos clientes MAT com a flag ligada</li>
+          </ul>
+        </div>
+
+        <div class="summary-item">
+          <h5><span class="icon blue-bg">📋</span> Antecipação de Fatura</h5>
+          <ul>
+            <li>1.7MM de clientes anteciparam fatura</li>
+          </ul>
+        </div>
+
+        <div class="summary-item">
+          <h5><span class="icon orange-bg">🐷</span> Cash-in Cofrinho do Cartão</h5>
+          <ul>
+            <li>3.5 MM clientes <span style="color:var(--text-muted);font-size:10px;">(R$1.7 bi em aportes)</span></li>
+            <li>15.5 MM aportes <span style="color:var(--text-muted);font-size:10px;">(cash-in / transf. aut.)</span></li>
+          </ul>
+        </div>
+
+        <div class="summary-item">
+          <h5><span class="icon blue-bg">🚫</span> Transação Negada</h5>
+          <div class="sub"><b>Clientes negados por saldo insuficiente</b></div>
+          <ul>
+            <li>5 MM clientes <span style="color:var(--text-muted);font-size:10px;">(55 MM transações)</span></li>
+            <li>1 MM ajustaram o limite após negada <span style="color:var(--text-muted);font-size:10px;">(24h)</span></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TOTAIS DO Q4 -->
+    <div class="summary-totals">
+      <div class="summary-total" style="flex:1;text-align:center;">
+        <div class="val">6.5 MM Clientes únicos</div>
+        <div class="lbl">7.5 MM Demandas em Q4</div>
+      </div>
+      <div style="width:1px;background:var(--border);"></div>
+      <div class="summary-total" style="flex:1;text-align:center;">
+        <div class="val">7 MM Clientes únicos</div>
+        <div class="lbl">75.7 MM Demandas em Q4</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ============================================================
+     INDICADORES
+     ============================================================ -->
+<section id="indicadores" style="background:var(--bg-section);padding:32px 0;">
+<div class="container">
+  <div class="section-label">Indicadores</div>
+  <div class="section-title">Indicadores <span>Demandas de Limites</span></div>
+  <div class="section-desc">Histórico mensal com comparação MoM e YoY. <span style="color:var(--green-primary)">Verde</span> = tendência positiva | <span style="color:var(--red)">Vermelho</span> = atenção</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('ativas')">Demandas Ativas</button>
+    <button class="tab-btn" onclick="switchTab('massivas')">Massivas</button>
+    <button class="tab-btn" onclick="switchTab('passivas')">Demandas Passivas</button>
+  </div>
+
+  <!-- ATIVAS -->
+  <div class="tab-content active" id="tab-ativas">
+    <div class="demand-header demand-active"><div class="demand-icon">🚀</div><div><h3>Aquisição</h3><p>Clientes novos (Débito/Múltiplo Direto) e upgrades de nível</p></div></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Clientes Novos (Aquisição)</div>
+        <div class="comparisons" id="comp-novos"></div>
+        <div class="current-value" id="cv-novos"></div>
+        <div class="chart-area" style="height:160px;" id="chart-novos"></div>
+        <div class="data-ref" id="ref-novos"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Upgrades</div>
+        <div class="comparisons" id="comp-upgrades"></div>
+        <div class="current-value" id="cv-upgrades"></div>
+        <div class="chart-area" style="height:160px;" id="chart-upgrades"></div>
+        <div class="data-ref" id="ref-upgrades"></div>
+      </div>
+    </div>
+
+    <div style="height:20px;"></div>
+    <div class="demand-header demand-active"><div class="demand-icon">📈</div><div><h3>Pedir Mais Limite</h3><p>Funil: clientes que solicitaram → clientes que contrataram</p></div></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">Clientes que Solicitaram</div><div class="comparisons" id="comp-pedidos"></div><div class="current-value" id="cv-pedidos"></div><div class="data-ref" id="ref-pedidos-bn"></div></div>
+      <div class="card"><div class="card-title">Clientes que Contrataram</div><div class="comparisons" id="comp-aceites"></div><div class="current-value" id="cv-aceites"></div><div class="data-ref" id="ref-aceites-bn"></div></div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <div class="card-title">Funil — Taxa de Contratação Mensal (%)</div>
+      <div class="line-chart" id="chart-funil" style="height:280px;"></div>
+      <div class="chart-legend" id="legend-funil"></div>
+      <div class="data-ref" id="ref-funil"></div>
+    </div>
+  </div>
+
+  <!-- MASSIVAS -->
+  <div class="tab-content" id="tab-massivas">
+    <div class="demand-header demand-active"><div class="demand-icon">⚡</div><div><h3>Massivas</h3><p>Clientes contemplados com ações mensais de crédito</p></div></div>
+    <div class="card">
+      <div class="card-title">Clientes Contemplados</div>
+      <div class="comparisons" id="comp-massivas"></div>
+      <div class="current-value" id="cv-massivas"></div>
+      <div class="data-ref" id="ref-massivas"></div>
+      <div class="chart-area" style="height:200px;margin-top:16px;" id="chart-massivas"></div>
+    </div>
+  </div>
+
+  <!-- PASSIVAS -->
+  <div class="tab-content" id="tab-passivas">
+    <div class="demand-header demand-passive"><div class="demand-icon">🔘</div><div><h3>Flag Aumento de Limite Automático</h3><p>Clientes que ligaram/desligaram o botão de aumento automático</p></div></div>
+    <div class="card" style="padding:20px;">
+      <div class="card-title">Histórico Mensal — Acumulado Ligou e % MAT com Flag</div>
+
+      <div style="display:flex;gap:24px;margin-top:16px;align-items:flex-start;">
+
+        <!-- Big numbers à esquerda — largura fixa -->
+        <div style="flex:0 0 220px;display:flex;flex-direction:column;gap:12px;">
+          <div style="padding:14px 16px;background:rgba(33,163,102,0.05);border-radius:8px;border-left:3px solid #21A366;">
+            <div class="card-title" style="margin:0 0 4px;font-size:11px;color:var(--text-secondary);">Flag Ligada Atualmente</div>
+            <div class="comparisons" id="comp-botao"></div>
+            <div class="current-value" id="cv-botao" style="margin:4px 0;"></div>
+            <div class="data-ref" id="ref-botao" style="font-size:9px;"></div>
+          </div>
+          <div style="padding:14px 16px;background:rgba(33,163,102,0.05);border-radius:8px;border-left:3px solid #21A366;">
+            <div class="card-title" style="margin:0 0 4px;font-size:11px;color:var(--text-secondary);">% do MAT com Flag</div>
+            <div class="comparisons" style="justify-content:flex-start;"><div class="comparison positive" id="bn-botao-pct"></div></div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">MAT Crédito: <span id="mat-val"></span></div>
+          </div>
+        </div>
+
+        <!-- Gráfico à direita — ocupa o restante -->
+        <div style="flex:1 1 0;min-width:0;">
+          <div id="chart-botao-novo" style="width:100%;height:280px;background:#fafafa;border:1px solid #e5e5e5;border-radius:8px;"></div>
+          <div class="chart-legend" id="legend-botao" style="margin-top:8px;justify-content:center;"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="height:20px;"></div>
+    <div class="demand-header demand-passive"><div class="demand-icon">📋</div><div><h3>Antecipação de Fatura</h3><p>Clientes que pagam mais que o valor da fatura</p></div></div>
+    <div class="card">
+      <div class="card-title">Clientes que Anteciparam</div>
+      <div class="comparisons" id="comp-antec"></div>
+      <div class="current-value" id="cv-antec"></div>
+      <div class="data-ref" id="ref-antec"></div>
+      <div class="chart-area" style="height:200px;margin-top:16px;" id="chart-antec"></div>
+    </div>
+
+    <div style="height:20px;"></div>
+    <div class="demand-header demand-passive"><div class="demand-icon">🐷</div><div><h3>Cash-in Cofrinho do Cartão</h3><p>Aportes espontâneos no cofrinho — Inclui: Guardado, Rendimento, Ajuste rendimentos, Compra parcial, Aporte pelo Card, Cashback, Compra cartão plástico, Estornos</p></div></div>
+    <div class="grid-3">
+      <div class="card"><div class="card-title">Valor do Aporte (mês)</div><div class="comparisons" id="comp-cashin"></div><div class="current-value" id="cv-cashin"></div><div class="data-ref" id="ref-cashin"></div></div>
+      <div class="card"><div class="card-title">Clientes com Aporte</div><div class="comparisons" id="comp-cashin-cli" style="color:var(--text-muted) !important;"></div><div class="current-value" id="cv-cashin-cli"></div><div class="data-ref" id="ref-cashin-cli"></div></div>
+      <div class="card"><div class="card-title">Saldo Total Investido</div><div class="comparisons" id="comp-cashin-saldo"></div><div class="current-value" id="cv-cashin-saldo" style="color:var(--green-primary);font-weight:700;"></div><div class="data-ref" id="ref-cashin-saldo"></div></div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <div class="card-title">Histórico — Valor do Aporte, Clientes e Saldo Total</div>
+      <div class="line-chart" id="chart-cashin" style="height:280px;"></div>
+      <div class="chart-legend" id="legend-cashin"></div>
+      <div class="data-ref" id="ref-cashin-chart"></div>
+    </div>
+
+    <div style="height:20px;"></div>
+    <div class="demand-header demand-passive"><div class="demand-icon">🚫</div><div><h3>Transação Negada por Saldo Insuficiente</h3><p>response_code = 51, faz_response_code = 023</p></div></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Clientes com Negada (mês)</div>
+        <div class="comparisons" id="comp-negada"></div>
+        <div class="current-value" id="cv-negada" style="color:var(--red);font-weight:700;"></div>
+        <div class="data-ref" id="ref-negada"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Ajustaram limite em até 24h</div>
+        <div class="comparisons" id="comp-negada-rev"></div>
+        <div class="current-value" id="cv-negada-rev" style="color:var(--green-primary);font-weight:700;"></div>
+        <div class="data-ref" id="ref-negada-rev"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <div class="card-title">Histórico Mensal — Negadas e Reversão 24h</div>
+      <div class="line-chart" id="chart-negada" style="height:260px;"></div>
+      <div class="chart-legend" id="legend-negada"></div>
+      <div style="font-size:9px;color:var(--text-muted);margin-top:4px;">* mês parcial</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============================================================
+     MAPA DE OPORTUNIDADES (ROADMAP)
+     ============================================================ -->
+<section id="roadmap">
+<div class="container">
+  <div class="section-label">Roadmap</div>
+  <div class="section-title">Mapa de <span>Oportunidades</span></div>
+  <div class="section-desc">Projetos entregues, em andamento e previstos por quarter.</div>
+
+  <div class="kr-legend">
+    <div class="kr-item"><span class="tag tag-kr1">KR 1</span> MAT Crédito / Userbase</div>
+    <div class="kr-item"><span class="tag tag-kr2">KR 2</span> Elevar Spending p/ Nível</div>
+    <div class="kr-item"><span class="tag tag-kr3">KR 3</span> Reduzir DR Limites</div>
+  </div>
+
+  <!-- ROADMAP — Demandas Ativas -->
+  <div style="margin-top:20px;">
+    <div style="display:flex;align-items:stretch;gap:8px;margin-bottom:8px;">
+      <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green-primary);background:var(--green-light);padding:12px 6px;border-radius:6px;display:flex;align-items:center;justify-content:center;">DEMANDAS ATIVAS</div>
+      <div style="flex:1;overflow-x:auto;">
+      <table class="roadmap-table" style="border-left:none;">
+        <thead><tr>
+          <th style="width:120px;">Jornada</th>
+          <th>Q4 25</th><th>Q1 26</th><th>Q2 26</th><th>Q3/Q4 26</th>
+        </tr></thead>
+        <tbody>
+        <tr class="roadmap-row-header"><td colspan="5">Aquisição / Upgrade</td></tr>
+        <tr>
+          <td>Aquisição /<br>Upgrade</td>
+            <td>
+              <div class="project-card"><div class="project-name">Upgrade de Nível</div><div class="project-detail">1.03 bi TPV</div><div class="project-tags"><span class="tag tag-done">✔</span></div></div>
+              <div class="project-card"><div class="project-name">N1 p/ Underage</div><div class="project-tags"><span class="tag tag-done">✔</span></div></div>
+              <div class="project-card"><div class="project-name">Game N2</div><div class="project-tags"><span class="tag tag-done">✔</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Transf. Automática</div><div class="project-detail">Ajustes nos textos de Aquisição</div><div class="project-detail">Push transacional</div><div class="project-tags"><span class="tag tag-progress">Progress</span><span class="tag tag-kr2">KR 2</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Transf. Automática</div><div class="project-detail">Inclusão na jornada de Aquisição</div><div class="project-detail">App tour</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+              <div class="project-card"><div class="project-name">Melhorar Pedido Aum. Limite</div><div class="project-detail">através do gerente via mesa de crédito</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Game 2.0</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+              <div class="project-card"><div class="project-name">Limite Avalista</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+            </td>
+          </tr>
+          <tr class="roadmap-row-header"><td colspan="5">Pedir Mais Limite</td></tr>
+          <tr>
+            <td>Pedir Mais<br>Limite</td>
+            <td>
+              <div class="project-card"><div class="project-name">Pedir Mais Limite Contextual</div><div class="project-tags"><span class="tag tag-done">✔</span><span class="tag tag-kr3">KR 3</span></div></div>
+              <div class="project-card"><div class="project-name">Crosseling Cofrinhos</div><div class="project-detail">9.6MM TPV</div><div class="project-tags"><span class="tag tag-done">✔</span><span class="tag tag-kr1">KR 1</span></div></div>
+              <div class="project-card"><div class="project-name">PAP Online Pedir Mais Limite</div><div class="project-detail">81MM TPV</div><div class="project-tags"><span class="tag tag-done">✔</span><span class="tag tag-kr3">KR 3</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">M. Cofres e 120% CDI</div><div class="project-detail">orç. 900MM TPV 26</div><div class="project-tags"><span class="tag tag-progress">Progress</span><span class="tag tag-kr1">KR 1</span></div></div>
+              <div class="project-card"><div class="project-name">Limite CDT</div><div class="project-detail">orç. 240MM TPV 26</div><div class="project-tags"><span class="tag tag-progress">Progress</span><span class="tag tag-kr1">KR 1</span></div></div>
+              <div class="project-card"><div class="project-name">Novo Hub Limites</div><div class="project-tags"><span class="tag tag-progress">Progress</span><span class="tag tag-kr3">KR 3</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Integrações Pedir Mais Limite</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+              <div class="project-card"><div class="project-name">Antecipação Salarial</div><div class="project-detail">orç. 240MM TPV 26</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+              <div class="project-card"><div class="project-name">Investimentos como Garantia</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Game 2.0</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+              <div class="project-card"><div class="project-name">Limite Avalista</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+              <div class="project-card"><div class="project-name">Agente IA de Limites no Hub de Limites</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+            </td>
+          </tr>
+          <tr class="roadmap-row-header"><td colspan="5">Massivas — Aumento Limite</td></tr>
+          <tr>
+            <td>Massivas</td>
+            <td>
+              <div class="project-card"><div class="project-name">Limite Sazonal Black Friday</div><div class="project-detail">58MM TPV</div><div class="project-tags"><span class="tag tag-done">✔</span><span class="tag tag-kr2">KR 2</span></div></div>
+              <div class="project-card"><div class="project-name">Limite Temporário (Slider no máximo)</div><div class="project-detail">57MM TPV</div><div class="project-tags"><span class="tag tag-done">✔</span><span class="tag tag-kr2">KR 2</span></div></div>
+              <div class="project-card"><div class="project-name">Ajuste Teto Crédito</div><div class="project-tags"><span class="tag tag-done">✔</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Produtização Limite Sazonal</div><div class="project-tags"><span class="tag tag-progress">Progress</span></div></div>
+              <div class="project-card"><div class="project-name">Limite Temporário (Slider no máximo)</div><div class="project-tags"><span class="tag tag-bau">BAU</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Calendarização Limite Sazonal</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+              <div class="project-card"><div class="project-name">Política Overlimit</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+              <div class="project-card"><div class="project-name">Buffer para pequenas transações</div><div class="project-detail">Proposta de crédito/segmentos</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Limite para Assinaturas</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+            </td>
+          </tr>
+
+          <!-- End ativas -->
+        </tbody>
+      </table>
+      </div>
+    </div>
+    </div>
+
+    <!-- ROADMAP — Demandas Passivas -->
+    <div style="margin-top:24px;">
+    <div style="display:flex;align-items:stretch;gap:8px;margin-bottom:8px;">
+      <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);background:var(--blue-light);padding:12px 6px;border-radius:6px;display:flex;align-items:center;justify-content:center;">DEMANDAS PASSIVAS</div>
+      <div style="flex:1;overflow-x:auto;">
+      <table class="roadmap-table">
+        <thead><tr>
+          <th style="width:120px;">Jornada</th>
+          <th>Q4 25</th><th>Q1 26</th><th>Q2 26</th><th>Q3/Q4 26</th>
+        </tr></thead>
+        <tbody>
+          <tr class="roadmap-row-header passive"><td colspan="5">Aumento Limite Aut.</td></tr>
+          <tr>
+            <td>Aumento<br>Limite Aut.</td>
+            <td><div class="project-card"><div class="project-name">Comunicações sistêmicas de fomento à flag Aumento Aut.</div><div class="project-tags"><span class="tag tag-done">✔</span><span class="tag tag-kr1">KR 1</span></div></div></td>
+            <td></td>
+            <td>
+              <div class="project-card"><div class="project-name">Inclusão Flag Aum. Aut.</div><div class="project-detail">Jornada Aquisição</div><div class="project-detail">Jornada Upgrade</div><div class="project-tags"><span class="tag tag-attention">Atenção</span><span class="tag tag-kr1">KR 1</span></div></div>
+              <div class="project-card"><div class="project-name">Incentivo à flag ao ajustar o Slider</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Upgrade de Nível automático ao ler o opt-in Aum. Aut.</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+            </td>
+          </tr>
+          <tr class="roadmap-row-header passive"><td colspan="5">Antecipação Fatura</td></tr>
+          <tr>
+            <td>Antecipação<br>Fatura</td>
+            <td></td>
+            <td>
+              <div class="project-card"><div class="project-name">Hub de limites contextual c/ incentivo ao pagto antecipado de fatura</div><div class="project-tags"><span class="tag tag-progress">Progress</span><span class="tag tag-kr3">KR 3</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Jornada contextual de aumento de limite pós pagto antecipado</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+            </td>
+            <td></td>
+          </tr>
+          <tr class="roadmap-row-header passive"><td colspan="5">Cash-in Cofrinho</td></tr>
+          <tr>
+            <td>Cash-in<br>Cofrinho</td>
+            <td></td>
+            <td></td>
+            <td><div class="project-card"><div class="project-name">Fomento Cash-in</div><div class="project-detail">Alerta após resgate</div><div class="project-detail">Alerta após pagto c/ saldo do Cofrinho</div><div class="project-detail">Direcionar p/ tela Múltiplos Cofres</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div></td>
+            <td></td>
+          </tr>
+          <tr class="roadmap-row-header passive"><td colspan="5">Transação Negada</td></tr>
+          <tr>
+            <td>Transação<br>Negada</td>
+            <td>
+              <div class="project-card"><div class="project-name">Recuperação Negadas OnUs</div><div class="project-detail">75MM TPV</div><div class="project-tags"><span class="tag tag-done">✔</span><span class="tag tag-kr3">KR 3</span></div></div>
+              <div class="project-card"><div class="project-name">Repescagem</div><div class="project-detail">84MM TPV (4 meses)</div><div class="project-tags"><span class="tag tag-done">✔</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Limite OnUs</div><div class="project-detail">orç. 330MM TPV 26</div><div class="project-tags"><span class="tag tag-progress">Progress</span><span class="tag tag-kr1">KR 1</span></div></div>
+              <div class="project-card"><div class="project-name">Limite Esgotando Contextual</div><div class="project-detail">4MM TPV</div><div class="project-tags"><span class="tag tag-done">✔</span><span class="tag tag-kr3">KR 3</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Limite OnUs</div><div class="project-detail">orç. 330MM TPV 26</div><div class="project-tags"><span class="tag tag-progress">Progress</span><span class="tag tag-kr1">KR 1</span></div></div>
+            </td>
+            <td>
+              <div class="project-card"><div class="project-name">Criação de uma Jornada p/ transações negadas</div><div class="project-tags"><span class="tag tag-avaliar">Avaliar</span></div></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+</div>
+</section>
+<!-- ============================================================
+     PROPOSTAS
+     ============================================================ -->
+<section id="propostas" style="background:var(--bg-section);padding:32px 0;">
+<div class="container">
+  <div class="section-label">Propostas</div>
+  <div class="section-title">Novas Oportunidades de <span>Demandas de Limites</span></div>
+  <div class="section-desc">Oportunidades identificadas para ampliar potencial de limites nos próximos quarters.</div>
+
+  <!-- ATIVAS -->
+  <div class="demand-header demand-active" style="margin-top:8px;"><div class="demand-icon">🟢</div><div><h3>Demandas Ativas</h3><p>Novos projetos para ofertas de limite diretas</p></div></div>
+  <div class="proposals-grid">
+    <div class="proposal-card">
+      <h4>Limite Dinâmico por Comportamento de Gasto</h4>
+      <p>Ajustar limite clean automaticamente com base no padrão de spending dos últimos 90 dias. Clientes com gastos crescentes e bom pagamento recebem incremento sem solicitação.</p>
+      <div class="proposal-meta"><span class="tag tag-kr1">KR 1</span><span class="tag tag-kr2">KR 2</span></div>
+    </div>
+    <div class="proposal-card">
+      <h4>Gamificação — "Desafio 30 Dias"</h4>
+      <p>Desafios (pagar fatura antes, aportar no cofrinho, usar cartão em X categorias) que desbloqueiam incrementos de limite progressivos e geram engajamento recorrente.</p>
+      <div class="proposal-meta"><span class="tag tag-kr1">KR 1</span><span class="tag tag-kr2">KR 2</span></div>
+    </div>
+    <div class="proposal-card">
+      <h4>Limite Social — Indicação c/ Boost</h4>
+      <p>Boost temporário de limite para clientes que indicam amigos que adquirem cartão de crédito. Gera aquisição orgânica via rede social do cliente.</p>
+      <div class="proposal-meta"><span class="tag tag-kr1">KR 1</span></div>
+    </div>
+    <div class="proposal-card">
+      <h4>Limite via Open Finance</h4>
+      <p>Usar dados de Open Finance para comprovar renda e oferecer limite clean proporcional, eliminando a fricção de comprovação manual e desbloqueando crédito reprimido.</p>
+      <div class="proposal-meta"><span class="tag tag-kr1">KR 1</span><span class="tag tag-kr3">KR 3</span></div>
+    </div>
+    <div class="proposal-card">
+      <h4>Massiva Preditiva com ML</h4>
+      <p>Usar modelos de machine learning para prever quais clientes vão precisar de mais limite nos próximos 30 dias (com base em spending, sazonalidade e eventos) e fazer ofertas proativas antes da necessidade.</p>
+      <div class="proposal-meta"><span class="tag tag-kr1">KR 1</span><span class="tag tag-kr2">KR 2</span></div>
+    </div>
+    <div class="proposal-card">
+      <h4>Upgrade Automático por Milestone de Uso</h4>
+      <p>Ao atingir marcos de uso do cartão (ex: 6 meses consecutivos de spending, 3 faturas pagas antes do vencimento), o cliente é automaticamente elegível a upgrade de nível sem precisar solicitar.</p>
+      <div class="proposal-meta"><span class="tag tag-kr1">KR 1</span><span class="tag tag-kr2">KR 2</span></div>
+    </div>
+  </div>
+
+  <!-- PASSIVAS -->
+  <div class="demand-header demand-passive" style="margin-top:24px;"><div class="demand-icon">🔵</div><div><h3>Demandas Passivas</h3><p>Novos projetos para ações indiretas de aumento de limite</p></div></div>
+  <div class="proposals-grid">
+    <div class="proposal-card">
+      <h4>Educação Financeira Incentivada</h4>
+      <p>Conteúdo educacional sobre uso saudável de crédito e cofrinho, com micro-aumentos de limite ao completar módulos. Reduz inadimplência e promove antecipação + cash-in.</p>
+      <div class="proposal-meta"><span class="tag tag-kr3">KR 3</span><span class="tag tag-kr2">KR 2</span></div>
+    </div>
+    <div class="proposal-card">
+      <h4>Cashback Direto no Cofrinho por Categoria</h4>
+      <p>Cashback automático no cofrinho do cartão para compras em categorias estratégicas (supermercado, farmácia). Incentiva cash-in passivo e aumenta o limite garantido sem ação do cliente.</p>
+      <div class="proposal-meta"><span class="tag tag-kr1">KR 1</span><span class="tag tag-kr2">KR 2</span></div>
+    </div>
+    <div class="proposal-card">
+      <h4>Alerta Inteligente de Fatura Próxima ao Vencimento</h4>
+      <p>Push contextual quando a fatura está próxima do vencimento e o cliente tem saldo disponível para antecipar. Inclui simulação de quanto limite seria liberado com o pagamento antecipado.</p>
+      <div class="proposal-meta"><span class="tag tag-kr3">KR 3</span></div>
+    </div>
+    <div class="proposal-card">
+      <h4>Aporte Recorrente Automático no Cofrinho</h4>
+      <p>Permitir que o cliente configure um aporte automático mensal no cofrinho do cartão (ex: R$50/mês). Cria hábito de poupança vinculada ao limite garantido e estabiliza o LG.</p>
+      <div class="proposal-meta"><span class="tag tag-kr1">KR 1</span><span class="tag tag-kr2">KR 2</span></div>
+    </div>
+    <div class="proposal-card">
+      <h4>Diagnóstico de Limite Personalizado</h4>
+      <p>Tela no app que mostra ao cliente exatamente o que ele pode fazer pra aumentar seu limite (ligar flag, antecipar fatura, aportar cofrinho, usar mais o cartão). Cada ação com impacto estimado em R$.</p>
+      <div class="proposal-meta"><span class="tag tag-kr3">KR 3</span><span class="tag tag-kr1">KR 1</span></div>
+    </div>
+    <div class="proposal-card">
+      <h4>Recuperação Inteligente Pós-Negada Multi-Canal</h4>
+      <p>Após transação negada, oferecer no mesmo fluxo (app, push, WhatsApp) opções de: aportar no cofrinho, antecipar fatura ou aceitar oferta de limite — tudo em 1 clique, com limite atualizado em tempo real.</p>
+      <div class="proposal-meta"><span class="tag tag-kr3">KR 3</span><span class="tag tag-kr2">KR 2</span></div>
+    </div>
+  </div>
+</div>
+</section>
+
+
+<footer style="padding:32px 0;border-top:1px solid var(--border);">
+  <div class="container" style="text-align:center;">
+    <p style="color:var(--text-muted);font-size:11px;">Mapa de Limites — Tribo Limites Cartões | Owner Slack: @aline fernandes</p>
+    <p style="color:var(--text-muted);font-size:10px;margin-top:2px;">Fonte: Databricks (picpay-principal)</p>
+  </div>
+</footer>
+
+<script>
+
+// ===== CHART RENDERERS =====
+function fmtLabelChart(n, opts) {
+  opts = opts || {};
+  if (opts.percent) return n.toFixed(2) + '%';
+  if (opts.forceBillion && Math.abs(n) >= 1e9) return (n/1e9).toFixed(2).replace(/\.?0+$/,'') + ' bi';
+  if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(1).replace('.0','') + 'MM';
+  if (Math.abs(n) >= 1e3) return (n/1e3).toFixed(0) + 'K';
+  return String(n);
+}
+
+function renderBarChart(id, values, color, labels, opts) {
+  const c = document.getElementById(id); if (!c) return;
+  opts = opts || {};
+  const max = Math.max(...values);
+  const lbs = labels || CONFIG.months;
+  const partial = opts.partialLast !== false;
+  // cor do mês parcial: cinza claro (genérico) ou verde-claro se aquisição
+  const partialColor = opts.partialColor || '#E5E7EB';
+  let h = '<div class="chart-bars">';
+  values.forEach((v, i) => {
+    const isLast = i === values.length - 1;
+    const ht = Math.max(2, (v / max) * 110);
+    const barColor = (isLast && partial) ? partialColor : color;
+    const partialMark = (isLast && partial) ? ' *' : '';
+    const labelColor = (isLast && partial) ? '#9CA3AF' : 'var(--text-secondary)';
+    h += '<div class="chart-bar-group">';
+    h += '<div style="font-size:10px;font-weight:700;color:'+labelColor+';text-align:center;margin-bottom:2px;white-space:nowrap;">'+fmtLabelChart(v)+partialMark+'</div>';
+    h += '<div class="chart-bar" style="height:'+ht+'px;background:'+barColor+';" title="'+fmtNum(v)+' — '+lbs[i]+'"></div>';
+    h += '<div class="chart-bar-label" style="color:'+(isLast && partial ? '#9CA3AF' : '')+'">'+lbs[i]+'</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  c.innerHTML = h;
+}
+
+function renderGroupedBarChart(id, ds, colors, labels, legendId) {
+  const c = document.getElementById(id); if (!c) return;
+  const max = Math.max(...ds.flat());
+  const chartH = c.clientHeight || 260;
+  const barAreaH = chartH - 40;
+  let h = '<div class="chart-bars" style="height:'+chartH+'px;">';
+  for (let i = 0; i < ds[0].length; i++) {
+    h += '<div class="chart-bar-group">';
+    h += '<div style="display:flex;gap:2px;align-items:flex-end;height:'+(barAreaH)+'px;width:100%;">';
+    ds.forEach((d, di) => {
+      const ht = Math.max(2, (d[i] / max) * (barAreaH - 20));
+      h += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;">';
+      h += '<div style="font-size:10px;font-weight:700;color:'+colors[di]+';text-align:center;margin-bottom:2px;white-space:nowrap;">'+fmtLabelChart(d[i])+'</div>';
+      h += '<div class="chart-bar" style="height:'+ht+'px;background:'+colors[di]+';width:100%;" title="'+fmtNum(d[i])+'"></div>';
+      h += '</div>';
+    });
+    h += '</div><div class="chart-bar-label" style="font-size:9px;font-weight:500;">'+(labels[i]||'')+'</div></div>';
+  }
+  h += '</div>';
+  c.innerHTML = h;
+}
+
+function renderLineChart(id, datasets, colors, lineLabels, legendId, customLabels) {
+  const c = document.getElementById(id); if (!c) return;
+  const allVals = datasets.flat().filter(v => v > 0);
+  const max = Math.max(...allVals) * 1.15;
+  const w = c.clientWidth || 800;
+  const ht = c.clientHeight || 200;
+  const pL=40,pR=40,pT=30,pB=25;
+  const cW=w-pL-pR, cH=ht-pT-pB;
+  const numP = datasets[0].length;
+  const lbs = customLabels || CONFIG.months;
+
+  let svg = '<svg viewBox="0 0 '+w+' '+ht+'" preserveAspectRatio="none">';
+  for (let i=0;i<=4;i++){const y=pT+(cH/4)*i; svg+='<line x1="'+pL+'" y1="'+y+'" x2="'+(w-pR)+'" y2="'+y+'" stroke="#F0F1F3" stroke-width="1"/>';}
+  for (let i=0;i<numP;i++){const x=pL+(cW/(numP-1))*i; svg+='<text x="'+x+'" y="'+(ht-4)+'" text-anchor="middle" fill="#9CA3AF" font-size="9" font-weight="500" font-family="Inter">'+lbs[i]+'</text>';}
+
+  datasets.forEach((ds, di) => {
+    let pts = [];
+    ds.forEach((v, i) => {
+      const x = pL + (cW/(numP-1))*i;
+      const y = pT + cH - (v/max)*cH;
+      pts.push(x+','+y);
+    });
+    svg += '<polygon points="'+pts.join(' ')+' '+(pL+cW)+','+(pT+cH)+' '+pL+','+(pT+cH)+'" fill="'+colors[di]+'" opacity="0.08"/>';
+    svg += '<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+colors[di]+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    ds.forEach((v, i) => {
+      const x = pL+(cW/(numP-1))*i;
+      const y = pT + cH - (v/max)*cH;
+      svg += '<circle cx="'+x+'" cy="'+y+'" r="3" fill="'+colors[di]+'" stroke="white" stroke-width="1.5"><title>'+fmtNum(v)+'</title></circle>';
+      const labelY = y - 8;
+      svg += '<text x="'+x+'" y="'+Math.max(12, labelY)+'" text-anchor="middle" fill="'+colors[di]+'" font-size="10" font-weight="700" font-family="Inter">'+fmtLabelChart(v)+'</text>';
+    });
+  });
+  svg += '</svg>';
+  c.innerHTML = svg;
+
+  if (legendId) {
+    const el = document.getElementById(legendId);
+    if (el) el.innerHTML = lineLabels.map((l,i) => '<div class="legend-item"><div class="legend-dot" style="background:'+colors[i]+'"></div>'+l+'</div>').join('');
+  }
+}
+
+function renderDualAxisChart(id, dsLeft, dsRight, colorsRight, leftLabel, rightLabels, legendId, customLabels, opts) {
+  const c = document.getElementById(id); if (!c) return;
+  opts = opts || {};
+  const w = c.clientWidth || 800;
+  const ht = c.clientHeight || 280;
+  const pL=40,pR=40,pT=65,pB=35;  // ⚡ Aumentado pT para 65px e pB para 35px
+  const cW=w-pL-pR, cH=ht-pT-pB;
+  const numP = dsLeft.length;
+  const lbs = customLabels || CONFIG.months;
+  const maxL = opts.maxLeft || (Math.max(...dsLeft) * 1.25);
+  const allR = dsRight.flat().filter(v=>v>0);
+  const maxR = opts.maxRight || (allR.length ? Math.max(...allR) * 1.3 : 1);
+  const labelPos = opts.labelPositions || ['below','above'];
+  const labelFormats = opts.labelFormats || []; // ['default', 'billion']
+
+  let svg = '<svg viewBox="0 0 '+w+' '+ht+'" preserveAspectRatio="none">';
+  for (let i=0;i<=4;i++){const y=pT+(cH/4)*i; svg+='<line x1="'+pL+'" y1="'+y+'" x2="'+(w-pR)+'" y2="'+y+'" stroke="#F0F1F3" stroke-width="1"/>';}
+  for (let i=0;i<numP;i++){const x=pL+(cW/(numP-1))*i; svg+='<text x="'+x+'" y="'+(ht-8)+'" text-anchor="middle" fill="#9CA3AF" font-size="9" font-weight="500" font-family="Inter">'+lbs[i]+'</text>';}
+
+  const barW = (cW / numP) * 0.5;
+  const partialLast = opts.partialLast || false;
+  dsLeft.forEach((v, i) => {
+    const x = pL + (cW/(numP-1))*i - barW/2;
+    const barH = Math.max(2, (v/maxL)*cH);
+    const y = pT + cH - barH;
+    const isLastBar = i === dsLeft.length - 1;
+    const barFill = (isLastBar && partialLast) ? '#E5E7EB' : '#21A366';
+    const barOp   = (isLastBar && partialLast) ? '1' : '0.18';
+    svg += '<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+barH+'" fill="'+barFill+'" opacity="'+barOp+'" rx="2"/>';
+    const labelY = y - 12;
+    const barLabelColor = (isLastBar && partialLast) ? '#9CA3AF' : '#21A366';
+    svg += '<text x="'+(x+barW/2)+'" y="'+labelY+'" text-anchor="middle" fill="'+barLabelColor+'" font-size="10" font-weight="700" font-family="Inter">'+fmtLabelChart(v)+'</text>';
+  });
+
+  const rightColors = colorsRight || ['#2563EB','#7C3AED'];
+  dsRight.forEach((ds, di) => {
+    let pts = [];
+    ds.forEach((v, i) => {
+      const x = pL + (cW/(numP-1))*i;
+      const y = pT + cH - (v/maxR)*cH;
+      pts.push(x+','+y);
+    });
+    svg += '<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+rightColors[di]+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+    ds.forEach((v, i) => {
+      if (v <= 0) return;
+      const x = pL+(cW/(numP-1))*i;
+      const y = pT + cH - (v/maxR)*cH;
+      const isLastPt = i === ds.length - 1;
+      const ptColor = (isLastPt && partialLast) ? '#9CA3AF' : rightColors[di];
+      svg += '<circle cx="'+x+'" cy="'+y+'" r="3" fill="'+ptColor+'" stroke="white" stroke-width="1.5"/>';
+      const pos = labelPos[di] || 'above';
+      const ly = pos === 'below' ? y + 14 : y - 12;
+      const fmt = labelFormats[di] || 'default';
+      const labelText = fmt === 'billion' ? fmtLabelChart(v, {forceBillion: true}) : 
+                        fmt === 'percent' ? fmtLabelChart(v, {percent: true}) : fmtLabelChart(v);
+      svg += '<text x="'+x+'" y="'+Math.max(12, ly)+'" text-anchor="middle" fill="'+ptColor+'" font-size="10" font-weight="700" font-family="Inter">'+labelText+'</text>';
+    });
+  });
+
+  svg += '</svg>';
+  c.innerHTML = svg;
+
+  if (legendId) {
+    const el = document.getElementById(legendId);
+    if (el) {
+      let h = '<div class="legend-item"><div style="width:12px;height:8px;background:#21A366;opacity:0.35;border-radius:2px;"></div>'+leftLabel+' (eixo esq.)</div>';
+      rightLabels.forEach((l,i) => { h += '<div class="legend-item"><div class="legend-dot" style="background:'+rightColors[i]+'"></div>'+l+' (eixo dir.)</div>'; });
+      el.innerHTML = h;
+    }
+  }
+}
+
+function renderBotaoChart(id, saldoValues, pctValues, months) {
+  const c = document.getElementById(id);
+  if (!c) return;
+
+  function draw() {
+    const w  = c.clientWidth  || 500;
+    const ht = c.clientHeight || 280;
+    // pT=44: espaço para rótulo acima da barra mais alta
+    // pB=36: espaço para label do mês + rótulo abaixo da linha
+    const pL=44, pR=16, pT=44, pB=36;
+    const cW = w - pL - pR;
+    const cH = ht - pT - pB;
+    const numP = saldoValues.length;
+    const step = cW / (numP - 1);
+
+    // Escalas independentes
+    const maxSaldo = Math.max(...saldoValues) * 1.15;
+    const maxPct   = Math.max(...pctValues)   * 1.15;
+
+    let svg = '<svg width="'+w+'" height="'+ht+'" viewBox="0 0 '+w+' '+ht+'">';
+
+    // Grid
+    for (let i = 0; i <= 4; i++) {
+      const y = pT + (cH / 4) * i;
+      svg += '<line x1="'+pL+'" y1="'+y+'" x2="'+(w-pR)+'" y2="'+y+'" stroke="#E5E7EB" stroke-width="0.5"/>';
+    }
+
+    // Labels dos meses (fundo da área, acima do pB)
+    for (let i = 0; i < numP; i++) {
+      const x = pL + step * i;
+      svg += '<text x="'+x+'" y="'+(ht-4)+'" text-anchor="middle" fill="#9CA3AF" font-size="8" font-weight="500">'+months[i]+'</text>';
+    }
+
+    // ── Barras: acumulado flag ligada (escala esquerda) ──
+    const barW = Math.max(6, Math.min(26, step * 0.5));
+    saldoValues.forEach((v, i) => {
+      const cx   = pL + step * i;
+      const x    = cx - barW / 2;
+      const barH = Math.max(3, (v / maxSaldo) * cH);
+      const y    = pT + cH - barH;
+      svg += '<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+barH+'" fill="#21A366" opacity="0.22" rx="2"/>';
+      // Rótulo ACIMA da coluna
+      svg += '<text x="'+cx+'" y="'+(y-5)+'" text-anchor="middle" fill="#6B7280" font-size="9" font-weight="600">'+fmtLabelChart(v)+'</text>';
+    });
+
+    // ── Linha: % MAT com flag (escala direita) ──
+    let pts = [];
+    pctValues.forEach((v, i) => {
+      const x = pL + step * i;
+      const y = pT + cH - (v / maxPct) * cH;
+      pts.push(x + ',' + y);
+    });
+    svg += '<polyline points="'+pts.join(' ')+'" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+
+    pctValues.forEach((v, i) => {
+      const x = pL + step * i;
+      const y = pT + cH - (v / maxPct) * cH;
+      svg += '<circle cx="'+x+'" cy="'+y+'" r="3" fill="#2563EB" stroke="white" stroke-width="1.5"/>';
+      // Rótulo ABAIXO do ponto — limitado para não colidir com labels dos meses
+      const labelY = Math.min(y + 13, pT + cH + 14);
+      svg += '<text x="'+x+'" y="'+labelY+'" text-anchor="middle" fill="#2563EB" font-size="9" font-weight="700">'+v.toFixed(1)+'%</text>';
+    });
+
+    svg += '</svg>';
+    c.innerHTML = svg;
+  }
+
+  draw();
+
+  // Redesenha quando o container mudar de tamanho
+  if (window.ResizeObserver) {
+    new ResizeObserver(() => draw()).observe(c);
+  }
+
+  // Legenda
+  const legend = document.getElementById('legend-botao');
+  if (legend) {
+    legend.innerHTML =
+      '<div class="legend-item"><div style="width:12px;height:10px;background:#21A366;opacity:0.5;border-radius:2px;display:inline-block;"></div>&nbsp;Acumulado de clientes com a flag ligada</div>' +
+      '<div class="legend-item"><div class="legend-dot" style="background:#2563EB"></div>&nbsp;% de clientes MAT com a flag ligada</div>';
+  }
+}
+
+function renderBarWithLine(id, barValues, lineValues, barColor, lineColor, barLabel, lineLabel, labels, legendId) {
+  const c = document.getElementById(id); if (!c) return;
+  const w = c.clientWidth || 800;
+  const ht = c.clientHeight || 160;
+  const allMax = Math.max(...barValues, ...lineValues) * 1.15;
+  const pL=40,pR=40,pT=30,pB=25;
+  const cW=w-pL-pR, cH=ht-pT-pB;
+  const numP = barValues.length;
+  const lbs = labels || CONFIG.months;
+  const isPartial = true;
+
+  let svg = '<svg viewBox="0 0 '+w+' '+ht+'" preserveAspectRatio="none">';
+  for (let i=0;i<=4;i++){const y=pT+(cH/4)*i; svg+='<line x1="'+pL+'" y1="'+y+'" x2="'+(w-pR)+'" y2="'+y+'" stroke="#F0F1F3" stroke-width="1"/>';}
+  for (let i=0;i<numP;i++){const x=pL+(cW/(numP-1))*i; svg+='<text x="'+x+'" y="'+(ht-4)+'" text-anchor="middle" fill="#9CA3AF" font-size="9" font-weight="500" font-family="Inter">'+lbs[i]+'</text>';}
+
+  const barW = (cW / numP) * 0.45;
+  barValues.forEach((v, i) => {
+    const x = pL + (cW/(numP-1))*i - barW/2;
+    const barH = Math.max(2, (v/allMax)*cH);
+    const y = pT + cH - barH;
+    const isLast = i === numP - 1;
+    const op = isLast ? '0.5' : '0.85';
+    svg += '<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+barH+'" fill="'+barColor+'" opacity="'+op+'" rx="2"/>';
+    svg += '<text x="'+(x+barW/2)+'" y="'+(y-4)+'" text-anchor="middle" fill="'+barColor+'" font-size="10" font-weight="700" font-family="Inter">'+fmtLabelChart(v)+(isLast?' *':'')+'</text>';
+  });
+
+  let pts = [];
+  lineValues.forEach((v, i) => {
+    const x = pL + (cW/(numP-1))*i;
+    const y = pT + cH - (v/allMax)*cH;
+    pts.push(x+','+y);
+  });
+  svg += '<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+lineColor+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+  lineValues.forEach((v, i) => {
+    const x = pL+(cW/(numP-1))*i;
+    const y = pT + cH - (v/allMax)*cH;
+    svg += '<circle cx="'+x+'" cy="'+y+'" r="3" fill="'+lineColor+'" stroke="white" stroke-width="1.5"/>';
+    const ly = y + 14;
+    svg += '<text x="'+x+'" y="'+Math.min(ht-pB-2, ly)+'" text-anchor="middle" fill="'+lineColor+'" font-size="10" font-weight="700" font-family="Inter">'+fmtLabelChart(v)+'</text>';
+  });
+
+  svg += '</svg>';
+  c.innerHTML = svg;
+
+  if (legendId) {
+    const el = document.getElementById(legendId);
+    if (el) {
+      el.innerHTML = '<div class="legend-item"><div style="width:10px;height:10px;background:'+barColor+';border-radius:2px;opacity:0.85;"></div>'+barLabel+'</div>'
+        + '<div class="legend-item"><div class="legend-dot" style="background:'+lineColor+'"></div>'+lineLabel+'</div>';
+    }
+  }
+}
+
+function renderAll() {
+  const d = DATA;
+  const last = (arr) => arr[arr.length-1];
+
+  // AQUISICAO
+  document.getElementById('comp-novos').innerHTML = compHTML(calcMoMClosed(d.aquisicao.novos.values), calcYoY(d.aquisicao.novos.values, d.aquisicao.novos.values.length-2));
+  document.getElementById('cv-novos').innerHTML = '<span class="label">fev/26:</span>' + fmtNum(d.aquisicao.novos.values[d.aquisicao.novos.values.length-2]);
+  renderBarChart('chart-novos', d.aquisicao.novos.values, '#21A366', null, {partialLast:true, partialColor:'#A7F3D0'});
+  document.getElementById('ref-novos').textContent = 'data ref: ' + d.aquisicao.ref + ' * mês parcial';
+
+  document.getElementById('comp-upgrades').innerHTML = compHTML(calcMoMClosed(d.aquisicao.upgrades.values), calcYoY(d.aquisicao.upgrades.values, d.aquisicao.upgrades.values.length-2));
+  document.getElementById('cv-upgrades').innerHTML = '<span class="label">fev/26:</span>' + fmtNum(d.aquisicao.upgrades.values[d.aquisicao.upgrades.values.length-2]);
+  renderBarChart('chart-upgrades', d.aquisicao.upgrades.values, '#2563EB', null, {partialLast:true, partialColor:'#BFDBFE'});
+  document.getElementById('ref-upgrades').textContent = 'data ref: ' + d.aquisicao.ref + ' * mês parcial';
+
+  // PEDIR LIMITE
+  document.getElementById('comp-pedidos').innerHTML = compHTML(calcMoMClosed(d.pedirLimite.pedidos.values), null);
+  document.getElementById('cv-pedidos').innerHTML = '<span class="label">fev/26:</span>' + fmtNum(d.pedirLimite.pedidos.values[d.pedirLimite.pedidos.values.length-2]);
+  document.getElementById('ref-pedidos-bn').textContent = 'data ref: ' + d.pedirLimite.ref;
+  document.getElementById('comp-aceites').innerHTML = compHTML(calcMoMClosed(d.pedirLimite.aceites.values), null);
+  document.getElementById('cv-aceites').innerHTML = '<span class="label">fev/26:</span>' + fmtNum(d.pedirLimite.aceites.values[d.pedirLimite.aceites.values.length-2]);
+  document.getElementById('ref-aceites-bn').textContent = 'data ref: ' + d.pedirLimite.ref;
+  
+  // Gráfico: barras solicitaram + linha % contratação (rótulos ABAIXO da linha)
+  renderDualAxisChart('chart-funil',
+    d.pedirLimite.pedidos.values,
+    [d.pedirLimite.taxaContratacao],
+    ['#21A366'],
+    'Clientes que solicitaram',
+    ['% Contratação'],
+    'legend-funil',
+    d.pedirLimite.months,
+    {maxLeft: Math.max(...d.pedirLimite.pedidos.values) * 1.2, maxRight: 5, labelPositions: ['below'], labelFormats: ['percent'], partialLast: true}
+  );
+  document.getElementById('ref-funil').textContent = 'data ref: ' + d.pedirLimite.ref + ' * mês parcial';
+
+  // MASSIVAS (série fechada — último é fev/26, sem parcial)
+  document.getElementById('comp-massivas').innerHTML = compHTML(calcMoM(d.massivas.values), calcYoY(d.massivas.values));
+  document.getElementById('cv-massivas').innerHTML = '<span class="label">fev/26:</span>' + fmtNum(d.massivas.current);
+  renderBarChart('chart-massivas', d.massivas.values, '#21A366', d.massivas.months, {partialLast:false});
+  document.getElementById('ref-massivas').textContent = 'data ref: ' + d.massivas.ref;
+
+  // BOTAO — saldo acumulado + % MAT (série fechada)
+  const momBotao = calcMoM(d.botaoAumento.saldoAcum);
+  const yoyBotao = d.botaoAumento.saldoAcum.length >= 12 ? calcYoY(d.botaoAumento.saldoAcum) : null;
+  document.getElementById('comp-botao').innerHTML = compHTML(momBotao, yoyBotao);
+  document.getElementById('cv-botao').innerHTML = '<span class="label">fev/26:</span>' + fmtNum(d.botaoAumento.ligadoAtual);
+  document.getElementById('ref-botao').textContent = 'data ref: ' + d.botaoAumento.ref;
+  const pctMat = ((d.botaoAumento.flagMat[d.botaoAumento.flagMat.length - 1] / d.botaoAumento.mat[d.botaoAumento.mat.length - 1]) * 100).toFixed(1);
+  document.getElementById('bn-botao-pct').textContent = pctMat + '%';
+  document.getElementById('mat-val').textContent = fmtNum(d.botaoAumento.mat[d.botaoAumento.mat.length - 1]) + ' MAT | ' + fmtNum(d.botaoAumento.flagMat[d.botaoAumento.flagMat.length - 1]) + ' c/ flag MAT';
+  renderBotaoChart('chart-botao-novo', d.botaoAumento.saldoAcum, d.botaoAumento.pctMat, d.botaoAumento.months);
+
+  // ANTECIPACAO (série com mês parcial)
+  document.getElementById('comp-antec').innerHTML = compHTML(calcMoMClosed(d.antecipacao.values), calcYoY(d.antecipacao.values, d.antecipacao.values.length-2));
+  document.getElementById('cv-antec').innerHTML = '<span class="label">fev/26:</span>' + fmtNum(d.antecipacao.current);
+  renderBarChart('chart-antec', d.antecipacao.values, '#2563EB', null, {partialLast:true, partialColor:'#BFDBFE'});
+  document.getElementById('ref-antec').textContent = 'data ref: ' + d.antecipacao.ref;
+
+  // CASH-IN (mês parcial — usa MoM fechado fev vs jan)
+  document.getElementById('comp-cashin').innerHTML = compHTML(calcMoMClosed(d.cashIn.valores), calcYoY(d.cashIn.valores, d.cashIn.valores.length-2));
+  document.getElementById('cv-cashin').innerHTML = '<span class="label">fev/26:</span>' + fmtBRL(d.cashIn.valores[d.cashIn.valores.length-2]);
+
+  document.getElementById('comp-cashin-cli').innerHTML = compHTML(calcMoMClosed(d.cashIn.clientes), calcYoY(d.cashIn.clientes, d.cashIn.clientes.length-2));
+  document.getElementById('cv-cashin-cli').innerHTML = '<span class="label">fev/26:</span>' + fmtNum(d.cashIn.clientes[d.cashIn.clientes.length-2]);
+
+  document.getElementById('comp-cashin-saldo').innerHTML = compHTML(calcMoMClosed(d.cashIn.saldos), calcYoY(d.cashIn.saldos, d.cashIn.saldos.length-2));
+  document.getElementById('cv-cashin-saldo').textContent = fmtBRL(d.cashIn.saldos[d.cashIn.saldos.length-2]);
+
+  const cashinRef = 'data ref: ' + DATA.cashIn.ref + ' * mês parcial';
+  document.getElementById('ref-cashin').textContent = cashinRef;
+  document.getElementById('ref-cashin-cli').textContent = cashinRef;
+  document.getElementById('ref-cashin-saldo').textContent = cashinRef;
+
+  renderDualAxisChart('chart-cashin',
+    d.cashIn.clientes,
+    [d.cashIn.valores, d.cashIn.saldos],
+    ['#21A366', '#2563EB'],
+    'Clientes',
+    ['Valor Aporte', 'Saldo Total'],
+    'legend-cashin', null,
+    {maxLeft: 7500000, maxRight: 2500000000, labelPositions: ['above', 'above'], labelFormats: ['default', 'billion'], partialLast: true}
+  );
+  const refCashinChart = document.getElementById('ref-cashin-chart');
+  if (refCashinChart) refCashinChart.textContent = 'data ref: ' + DATA.cashIn.ref + ' * mês parcial';
+
+  // NEGADA (mês parcial — MoM fev vs jan, big number vermelho já no HTML)
+  document.getElementById('comp-negada').innerHTML = compHTML(calcMoMClosed(d.negada.values), calcYoY(d.negada.values, d.negada.values.length-2), true);
+  document.getElementById('cv-negada').innerHTML = '<span class="label">fev/26:</span>' + fmtNum(d.negada.values[d.negada.values.length-2]);
+
+  document.getElementById('comp-negada-rev').innerHTML = compHTML(calcMoMClosed(d.negada.reversao.values), calcYoY(d.negada.reversao.values, d.negada.reversao.values.length-2));
+  document.getElementById('cv-negada-rev').textContent = fmtNum(d.negada.reversao.values[d.negada.reversao.values.length-2]);
+
+  renderBarWithLine('chart-negada',
+    d.negada.values, d.negada.reversao.values,
+    '#9CA3AF', '#21A366',
+    'Clientes com negada', 'Ajustaram limite em 24h',
+    null, 'legend-negada'
+  );
+  const negRef = 'data ref: ' + DATA.negada.ref + ' * mês parcial';
+  document.getElementById('ref-negada').textContent = negRef;
+  document.getElementById('ref-negada-rev').textContent = negRef;
+}
+
+// TABS
+function switchTab(t) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  if (t === 'ativas') {
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.getElementById('tab-ativas').classList.add('active');
+  } else if (t === 'massivas') {
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('tab-massivas').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab-btn')[2].classList.add('active');
+    document.getElementById('tab-passivas').classList.add('active');
+  }
+}
+
+// NAV
+document.querySelectorAll('.nav-links a').forEach(l => l.addEventListener('click', () => {
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  l.classList.add('active');
+}));
+
+window.addEventListener('load', renderAll);
+window.addEventListener('resize', renderAll);
+</script>
+</body>
+</html>
