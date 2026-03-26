@@ -1,12 +1,8 @@
-import sys
 import time
-import json
 import re
 import os
 import requests
 from datetime import datetime
-from databricks.sdk import WorkspaceClient
-from databricks.sdk.service.sql import StatementState
 
 # ── Config ────────────────────────────────────────────────────────────────────
 DATABRICKS_HOST  = "https://picpay-principal.cloud.databricks.com"
@@ -21,32 +17,48 @@ NITRO_USER_TOKEN   = os.environ.get("NITRO_USER_TOKEN", "e11cd9ab771f")
 NITRO_API_URL      = "https://nitro-link-api.ppay.me"
 NITRO_API_FALLBACK = "https://ahfxd8cc43.execute-api.us-east-1.amazonaws.com"
 
-# ── Databricks ────────────────────────────────────────────────────────────────
-w = WorkspaceClient(
-    host=DATABRICKS_HOST,
-    token=DATABRICKS_TOKEN,
-    auth_type="pat"
-)
+HEADERS = {
+    "Authorization": f"Bearer {DATABRICKS_TOKEN}",
+    "Content-Type": "application/json"
+}
 
+# ── Databricks REST API ───────────────────────────────────────────────────────
 def run_query(sql, label, timeout=300):
-    r = w.statement_execution.execute_statement(
-        warehouse_id=WH_ID,
-        statement=TAG + "\n" + sql,
-        wait_timeout="0s"
+    # Submeter query
+    payload = {
+        "warehouse_id": WH_ID,
+        "statement": TAG + "\n" + sql,
+        "wait_timeout": "0s"
+    }
+    r = requests.post(
+        f"{DATABRICKS_HOST}/api/2.0/sql/statements/",
+        headers=HEADERS,
+        json=payload,
+        timeout=30
     )
-    sid = r.statement_id
-    print(f"  [{label}] submetida: {sid}")
+    r.raise_for_status()
+    data = r.json()
+    stmt_id = data["statement_id"]
+    print(f"  [{label}] submetida: {stmt_id}")
+
+    # Polling
     for _ in range(timeout // 5):
-        s = w.statement_execution.get_statement(sid)
-        if s.status.state == StatementState.SUCCEEDED:
-            cols = [c.name for c in s.manifest.schema.columns]
-            rows = s.result.data_array or []
+        s = requests.get(
+            f"{DATABRICKS_HOST}/api/2.0/sql/statements/{stmt_id}",
+            headers=HEADERS,
+            timeout=30
+        ).json()
+        state = s["status"]["state"]
+        if state == "SUCCEEDED":
+            cols = [c["name"] for c in s["manifest"]["schema"]["columns"]]
+            rows = s["result"].get("data_array", []) or []
             print(f"  [{label}] OK — {len(rows)} linhas")
             return cols, rows
-        elif s.status.state in (StatementState.FAILED, StatementState.CANCELED):
-            print(f"  [{label}] ERRO: {s.status.error}")
+        elif state in ("FAILED", "CANCELED"):
+            print(f"  [{label}] ERRO: {s['status'].get('error', {}).get('message', '')}")
             return None, None
         time.sleep(5)
+
     print(f"  [{label}] TIMEOUT")
     return None, None
 
@@ -76,18 +88,13 @@ ORDER BY mes_ref
 """, "antecipacao")
 
 # ── Montar dados ──────────────────────────────────────────────────────────────
-def month_label(yyyymm):
-    months = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"]
-    y, m = yyyymm.split("-")
-    return f"{months[int(m)-1]}/{y[2:]}"
-
 antec_values  = [int(r[0]) for r in rows_antec] if rows_antec else []
 antec_current = antec_values[-2] if len(antec_values) >= 2 else (antec_values[-1] if antec_values else 0)
 
 today      = datetime.today()
 update_str = today.strftime("%d/%m/%Y")
 
-print(f"  antecipação: {len(antec_values)} meses, fev/26={antec_current:,}")
+print(f"  antecipação: {len(antec_values)} meses, atual={antec_current:,}")
 
 # ── Atualizar HTML ────────────────────────────────────────────────────────────
 print("Atualizando index.html...")
@@ -116,7 +123,7 @@ with open("index.html", "w", encoding="utf-8") as f:
 print("  index.html atualizado.")
 
 # ── Publicar no nitro-link ────────────────────────────────────────────────────
-print("Publicando no nitro-link (link fixo via pasta)...")
+print("Publicando no nitro-link...")
 
 def call_lambda(payload):
     for url in [NITRO_API_URL, NITRO_API_FALLBACK]:
@@ -140,8 +147,7 @@ with open("index.html", "rb") as f:
 put = requests.put(upload_url, data=content, headers={"Content-Type": "text/html"}, timeout=60)
 put.raise_for_status()
 
-print(f"  Publicado com sucesso!")
-print(f"  URL fixa: {public_url}")
+print(f"  Publicado! URL fixa: {public_url}")
 
 with open("last_published_url.txt", "w") as f:
     f.write(public_url)
