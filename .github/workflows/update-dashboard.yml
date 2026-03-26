@@ -1,0 +1,36 @@
+name: Atualizar Dashboard Diariamente
+
+on:
+  schedule:
+    - cron: '0 11 * * *'   # 8h horário de Brasília (UTC-3 = 11h UTC)
+  workflow_dispatch:         # permite rodar manualmente pelo GitHub
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        run: pip install databricks-sdk requests
+
+      - name: Executar script de atualização
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          NITRO_USER_TOKEN: e11cd9ab771f
+        run: python update_data.py
+
+      - name: Commit URL publicada
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html last_published_url.txt
+          git diff --cached --quiet || git commit -m "chore: atualização automática $(date +'%d/%m/%Y')"
+          git push
