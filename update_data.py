@@ -6,9 +6,12 @@ from datetime import datetime
 
 # ── Config ────────────────────────────────────────────────────────────────────
 DATABRICKS_HOST  = "https://picpay-principal.cloud.databricks.com"
-DATABRICKS_TOKEN = os.environ.get("DB_PAT_TOKEN", "")
+DATABRICKS_TOKEN = os.environ.get("DB_PAT_TOKEN", "").strip()
 if not DATABRICKS_TOKEN:
     raise ValueError("DB_PAT_TOKEN não definido")
+
+# Diagnóstico: mostrar prefixo do token (nunca o valor completo)
+print(f"Token recebido: '{DATABRICKS_TOKEN[:8]}...' (len={len(DATABRICKS_TOKEN)})")
 
 WH_ID = "3b94f0935afb32db"
 TAG   = "/* source:hubai_nitro */"
@@ -36,6 +39,10 @@ def run_query(sql, label, timeout=300):
         json=payload,
         timeout=30
     )
+    if r.status_code == 401:
+        raise RuntimeError(f"401 Unauthorized — token inválido ou expirado. Prefixo: '{DATABRICKS_TOKEN[:8]}...'")
+    if r.status_code == 403:
+        raise RuntimeError(f"403 Forbidden — token sem permissão no workspace. Prefixo: '{DATABRICKS_TOKEN[:8]}...'")
     r.raise_for_status()
     data = r.json()
     stmt_id = data["statement_id"]
